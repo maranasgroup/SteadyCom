@@ -1,0 +1,701 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of createCommModel</title>
+  <meta name="keywords" content="createCommModel">
+  <meta name="description" content="Create a community COBRA model. The model has an extra compartment [u]">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html SteadyCom -->
+<h1>createCommModel
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Create a community COBRA model. The model has an extra compartment [u]</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [modelCom,infoCom,indCom] = createCommModel(modelCell, options) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Create a community COBRA model. The model has an extra compartment [u] 
+for inter-organism and community exchange, i.e.,
+ (environment) &lt;=&gt; [u] &lt;=&gt; [e_organism1]
+                       &lt;=&gt; [e_organism2] ...
+
+[modelCom,infoCom,indCom] = createCommModel(modelCell,options)
+
+INPUT
+ modelCell:    Cell array of COBRA model (e.g., {model1, model2, model3})
+               or a structure with modelCell.org being the model for
+               organism org
+ (if a model in 'modelCell' has the field 'metComs', the name in
+ model.metComs would be used to map community metabolites instead of the
+ original name in model.mets [recommended to provide])
+
+ options:      Structure containing the following fields
+     spBm:     Cell array of reaction names of the biomass reaction in
+               each model in 'modelCell'
+   (below are optional, but recommended to provide)
+     spAbbr:   Cell array of abbrivation for each organism in modelCell
+     spName:   Full names of the species
+     spATPM:   Cell array of reaction names of the ATP maintenance reaction in
+               each model in 'modelCell'
+    ('sp' originally for 'species')
+     metExId:  Identifier for extracellular metabolites metabolites (default '[e]')
+               If input is the empty string (''), find all metabolites that have exchange reactions
+     rxnField: Cell array of field names in the models that have the same
+               size as rxns. Default to include all fields starting
+               with 'rxn' and include 'grRules', 'rules', 'confidenceScores', 'subSystems'
+     metField: Cell array of field names in the models that have the same
+               size as mets. Default to include all fields starting with 'met'
+
+OUTPUT
+ modelCom:     COBRA community model with the following extra fields
+               'infoCom' and 'indCom', which are also outputed as separate
+               output argument. See below.
+ infoCom:      A structure of useful reaction names and organism names:
+   spBm:          spBm{k} the biomass reaction of info.speciesAbbr{k}                                        
+   spATPM:        spATPM{k} the ATP maintenance reaction of info.speciesAbbr{k}                                            
+   rxnSD:         all sink and demand reactions other than the community exchange reactions (EXcom)
+   EXcom:         EXcom{i,1} the community uptake reaction for community metabolite info.metCom{i}
+                  EXcom{i,2} the community production reaction for community metabolite info.metCom{i}
+   EXsp:          EXsp{i,k} the species-community exchange reaction for community metabolite info.metCom{i}
+   Mcom:          community metabolites
+   Msp:           Msp{i,k} the extracellular met of organism k
+                  corresponding to community metabolite Mcom{i}
+   speciesAbbr:   species abbreviation, used in mets and rxns                       
+                  to identify species-specific metabolites                          
+   speciesName:   full name of each species        
+   rxnSps:        rxnSps{j} is the abbreviation of species k (speciesAbbr{k}) 
+                  if reaction j is of species k. 'com' for community exchange reactions    
+   metSps:        metSps{i} is the abbreviation of species k (speciesAbbr{k}) 
+                  if metabolite i is of species k. 'com' for community exchange reactions 
+ indCom:       The corresponding reaction IDs and organism IDs:
+   spBm:          reaction IDs for info.spBm
+   spATPM:        reaction IDs for info.spATPM
+   rxnSD:         reaction IDs for info.rxnSD 
+   EXcom:         reaction IDs for info.EXcom                               
+   EXsp:          reaction IDs for info.EXsp. EXsp(i,k) = 0 if info.EXsp{i,k} is empty          
+   Mcom:          metabolite IDs for info.Mcom
+   Msp:           metabolite IDs for info.Msp
+   rxnSps:        index.rxnSps(j) = k implies that reaction j is of                      
+                  species info.speciesName{k}. = 0 for community exchange reactions    
+   metSps:        index.metSps(i) = k implies that metabolite i is of                    
+                  species info.speciesName{k}. = 0 for community metabolites</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="../SteadyCom/auxiliary_functions/getCobraComParams.html" class="code" title="function varargout = getCobraComParams(param2get, options, modelCom)">getCobraComParams</a>	get the required default parameters</li><li><a href="../SteadyCom/auxiliary_functions/infoCom2indCom.html" class="code" title="function indCom = infoCom2indCom(modelCom,infoCom,revFlag,spAbbr,spName)">infoCom2indCom</a>	Transform between community reaction IDs and reaction names</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [modelCom,infoCom,indCom] = createCommModel(modelCell, options)</a>
+0002 <span class="comment">%Create a community COBRA model. The model has an extra compartment [u]</span>
+0003 <span class="comment">%for inter-organism and community exchange, i.e.,</span>
+0004 <span class="comment">% (environment) &lt;=&gt; [u] &lt;=&gt; [e_organism1]</span>
+0005 <span class="comment">%                       &lt;=&gt; [e_organism2] ...</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%[modelCom,infoCom,indCom] = createCommModel(modelCell,options)</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%INPUT</span>
+0010 <span class="comment">% modelCell:    Cell array of COBRA model (e.g., {model1, model2, model3})</span>
+0011 <span class="comment">%               or a structure with modelCell.org being the model for</span>
+0012 <span class="comment">%               organism org</span>
+0013 <span class="comment">% (if a model in 'modelCell' has the field 'metComs', the name in</span>
+0014 <span class="comment">% model.metComs would be used to map community metabolites instead of the</span>
+0015 <span class="comment">% original name in model.mets [recommended to provide])</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% options:      Structure containing the following fields</span>
+0018 <span class="comment">%     spBm:     Cell array of reaction names of the biomass reaction in</span>
+0019 <span class="comment">%               each model in 'modelCell'</span>
+0020 <span class="comment">%   (below are optional, but recommended to provide)</span>
+0021 <span class="comment">%     spAbbr:   Cell array of abbrivation for each organism in modelCell</span>
+0022 <span class="comment">%     spName:   Full names of the species</span>
+0023 <span class="comment">%     spATPM:   Cell array of reaction names of the ATP maintenance reaction in</span>
+0024 <span class="comment">%               each model in 'modelCell'</span>
+0025 <span class="comment">%    ('sp' originally for 'species')</span>
+0026 <span class="comment">%     metExId:  Identifier for extracellular metabolites metabolites (default '[e]')</span>
+0027 <span class="comment">%               If input is the empty string (''), find all metabolites that have exchange reactions</span>
+0028 <span class="comment">%     rxnField: Cell array of field names in the models that have the same</span>
+0029 <span class="comment">%               size as rxns. Default to include all fields starting</span>
+0030 <span class="comment">%               with 'rxn' and include 'grRules', 'rules', 'confidenceScores', 'subSystems'</span>
+0031 <span class="comment">%     metField: Cell array of field names in the models that have the same</span>
+0032 <span class="comment">%               size as mets. Default to include all fields starting with 'met'</span>
+0033 <span class="comment">%</span>
+0034 <span class="comment">%OUTPUT</span>
+0035 <span class="comment">% modelCom:     COBRA community model with the following extra fields</span>
+0036 <span class="comment">%               'infoCom' and 'indCom', which are also outputed as separate</span>
+0037 <span class="comment">%               output argument. See below.</span>
+0038 <span class="comment">% infoCom:      A structure of useful reaction names and organism names:</span>
+0039 <span class="comment">%   spBm:          spBm{k} the biomass reaction of info.speciesAbbr{k}</span>
+0040 <span class="comment">%   spATPM:        spATPM{k} the ATP maintenance reaction of info.speciesAbbr{k}</span>
+0041 <span class="comment">%   rxnSD:         all sink and demand reactions other than the community exchange reactions (EXcom)</span>
+0042 <span class="comment">%   EXcom:         EXcom{i,1} the community uptake reaction for community metabolite info.metCom{i}</span>
+0043 <span class="comment">%                  EXcom{i,2} the community production reaction for community metabolite info.metCom{i}</span>
+0044 <span class="comment">%   EXsp:          EXsp{i,k} the species-community exchange reaction for community metabolite info.metCom{i}</span>
+0045 <span class="comment">%   Mcom:          community metabolites</span>
+0046 <span class="comment">%   Msp:           Msp{i,k} the extracellular met of organism k</span>
+0047 <span class="comment">%                  corresponding to community metabolite Mcom{i}</span>
+0048 <span class="comment">%   speciesAbbr:   species abbreviation, used in mets and rxns</span>
+0049 <span class="comment">%                  to identify species-specific metabolites</span>
+0050 <span class="comment">%   speciesName:   full name of each species</span>
+0051 <span class="comment">%   rxnSps:        rxnSps{j} is the abbreviation of species k (speciesAbbr{k})</span>
+0052 <span class="comment">%                  if reaction j is of species k. 'com' for community exchange reactions</span>
+0053 <span class="comment">%   metSps:        metSps{i} is the abbreviation of species k (speciesAbbr{k})</span>
+0054 <span class="comment">%                  if metabolite i is of species k. 'com' for community exchange reactions</span>
+0055 <span class="comment">% indCom:       The corresponding reaction IDs and organism IDs:</span>
+0056 <span class="comment">%   spBm:          reaction IDs for info.spBm</span>
+0057 <span class="comment">%   spATPM:        reaction IDs for info.spATPM</span>
+0058 <span class="comment">%   rxnSD:         reaction IDs for info.rxnSD</span>
+0059 <span class="comment">%   EXcom:         reaction IDs for info.EXcom</span>
+0060 <span class="comment">%   EXsp:          reaction IDs for info.EXsp. EXsp(i,k) = 0 if info.EXsp{i,k} is empty</span>
+0061 <span class="comment">%   Mcom:          metabolite IDs for info.Mcom</span>
+0062 <span class="comment">%   Msp:           metabolite IDs for info.Msp</span>
+0063 <span class="comment">%   rxnSps:        index.rxnSps(j) = k implies that reaction j is of</span>
+0064 <span class="comment">%                  species info.speciesName{k}. = 0 for community exchange reactions</span>
+0065 <span class="comment">%   metSps:        index.metSps(i) = k implies that metabolite i is of</span>
+0066 <span class="comment">%                  species info.speciesName{k}. = 0 for community metabolites</span>
+0067 
+0068 
+0069 <span class="comment">%% arguement checking</span>
+0070 <span class="keyword">if</span> ~exist(<span class="string">'options'</span>, <span class="string">'var'</span>)
+0071     options = struct();
+0072 <span class="keyword">end</span>
+0073 <span class="comment">%get parameters</span>
+0074 [spAbbr,spName,spBm,spATPM,metExId,rxnField,metField] = <a href="../SteadyCom/auxiliary_functions/getCobraComParams.html" class="code" title="function varargout = getCobraComParams(param2get, options, modelCom)">getCobraComParams</a>(<span class="keyword">...</span>
+0075     {<span class="string">'spAbbr'</span>,<span class="string">'spName'</span>,<span class="string">'spBm'</span>,<span class="string">'spATPM'</span>,<span class="string">'metExId'</span>,<span class="string">'rxnField'</span>,<span class="string">'metField'</span>}, options);
+0076 <span class="comment">%organisms' abbreviations and names</span>
+0077 nameSpecies = false;
+0078 <span class="keyword">if</span> isstruct(modelCell)
+0079     <span class="keyword">if</span> isempty(spAbbr)
+0080         spAbbr = fieldnames(modelCell);
+0081     <span class="keyword">end</span>
+0082     modelCell = struct2cell(modelCell);
+0083 <span class="keyword">else</span>
+0084     <span class="keyword">if</span> isempty(spAbbr)
+0085         nameSpecies = true;
+0086     <span class="keyword">end</span>
+0087 <span class="keyword">end</span>
+0088 nSp = numel(modelCell);
+0089 <span class="keyword">if</span> nameSpecies
+0090     spAbbr = strcat(<span class="string">'org'</span>,strtrim(cellstr(num2str((1:nSp)'))));
+0091 <span class="keyword">end</span>
+0092 <span class="keyword">if</span> isempty(spName)
+0093     spName = spAbbr;
+0094 <span class="keyword">end</span>
+0095 <span class="comment">%biomass reactions</span>
+0096 findspBm = false;
+0097 <span class="keyword">if</span> isempty(spBm)
+0098     error(<span class="string">'Please provide the names of the biomass reactions in options.spBm'</span>); 
+0099 <span class="keyword">elseif</span> numel(spBm) ~= nSp
+0100     error(<span class="string">'Number of entries in options.spBm not equal to the number of models.'</span>);
+0101 <span class="keyword">elseif</span> iscell(spBm)
+0102     rxnBiomassID = zeros(nSp, 1);
+0103     <span class="keyword">for</span> j = 1: nSp
+0104         rxnBiomassID(j) = findRxnIDs(modelCell{j}, spBm{j});
+0105     <span class="keyword">end</span>
+0106     spBm = rxnBiomassID;
+0107 <span class="keyword">end</span>
+0108 <span class="comment">%ATPM</span>
+0109 <span class="keyword">if</span> isempty(spATPM)
+0110     spATPM = zeros(nSp,1);
+0111 <span class="keyword">elseif</span> iscell(spATPM)
+0112     spATPM0 = spATPM;
+0113     spATPM = zeros(nSp,1);
+0114     <span class="keyword">for</span> j = 1: nSp
+0115         spATPM(j) = findRxnIDs(modelCell{j}, spATPM0{j});
+0116     <span class="keyword">end</span>
+0117 <span class="keyword">end</span>
+0118 <span class="comment">%% Copy fields from COBRA model</span>
+0119 field = {};
+0120 [fieldNumeric, fieldCell, fieldStruct]  = deal(false(0));
+0121 <span class="keyword">for</span> jSp = 1:nSp
+0122     fCur = fieldnames(modelCell{jSp});
+0123     fNcur = cellfun(@(x) isnumeric(modelCell{jSp}.(x)),fCur);
+0124     fCcur = cellfun(@(x) iscell(modelCell{jSp}.(x)),fCur);
+0125     fScur = cellfun(@(x) isstruct(modelCell{jSp}.(x)),fCur);
+0126     field = [field; fCur];
+0127     fieldNumeric = [fieldNumeric; fNcur];
+0128     fieldCell = [fieldCell; fCcur];
+0129     fieldStruct = [fieldStruct; fScur];
+0130 <span class="keyword">end</span>
+0131 [field,id] = unique(field);
+0132 [fieldNumeric,fieldCell,fieldStruct] = deal(fieldNumeric(id),fieldCell(id),fieldStruct(id));
+0133 <span class="comment">%fields need special care</span>
+0134 id = ismember(field,{<span class="string">'S'</span>, <span class="string">'rxns'</span>, <span class="string">'mets'</span>, <span class="string">'rev'</span>, <span class="string">'lb'</span>, <span class="string">'ub'</span>, <span class="string">'c'</span>, <span class="string">'b'</span>, <span class="string">'metComs'</span>,<span class="string">'rxnGeneMat'</span>,<span class="string">'genes'</span>});
+0135 [field,fieldNumeric,fieldCell,fieldStruct] = deal(field(~id),fieldNumeric(~id),fieldCell(~id),fieldStruct(~id));
+0136 rxnField = unique([rxnField(:);{<span class="string">'grRules'</span>;<span class="string">'rules'</span>;<span class="string">'confidenceScores'</span>;<span class="string">'subSystems'</span>}]);
+0137 
+0138 modelCom = struct();
+0139 <span class="keyword">for</span> j = 1:numel(field)
+0140     modelCom.(field{j}) = [];
+0141 <span class="keyword">end</span>
+0142 
+0143 <span class="comment">%% fields to be changed</span>
+0144 S = [];
+0145 rxns = {};
+0146 mets = {};
+0147 metsCom = {};
+0148 rev = [];
+0149 lb = [];
+0150 ub = [];
+0151 c = [];
+0152 b = [];
+0153 <span class="comment">%map rxns to species</span>
+0154 rxnSps = [];
+0155 <span class="comment">%map mets to species</span>
+0156 metSps = [];
+0157 <span class="comment">%rxn IDs of biomass</span>
+0158 spBmId = zeros(nSp, 1);
+0159 
+0160 <span class="comment">%extracellular metabolites</span>
+0161 ex = cell(nSp, 1);
+0162 <span class="comment">%exchange reactions</span>
+0163 rxnEx = cell(nSp, 1);
+0164 <span class="comment">%map ex mets and ex rxns</span>
+0165 rxnEx2met = cell(nSp, 1);
+0166 
+0167 <span class="comment">%% loop for each species</span>
+0168 <span class="keyword">if</span> ~isempty(metField)
+0169     metFieldKnown = ismember(field,metField);
+0170 <span class="keyword">else</span>
+0171     metFieldKnown = false(numel(field),1);
+0172 <span class="keyword">end</span>
+0173 <span class="keyword">if</span> ~isempty(rxnField)
+0174     rxnFieldKnown = ismember(field,rxnField);
+0175 <span class="keyword">else</span>
+0176     rxnFieldKnown = false(numel(field),1);
+0177 <span class="keyword">end</span>
+0178 <span class="comment">%met-related fields</span>
+0179 metFieldL = strncmp(<span class="string">'met'</span>,field,3) | metFieldKnown;
+0180 <span class="comment">%rxn-related fields</span>
+0181 rxnFieldL = strncmp(<span class="string">'rxn'</span>,field,3) | rxnFieldKnown;
+0182 <span class="comment">%all other fields just put in a cell for each model</span>
+0183 spFieldL = ~metFieldL &amp; ~rxnFieldL;
+0184 
+0185 <span class="comment">% metField = union(setdiff(fieldAll(strncmp('met',fieldAll,3)),...</span>
+0186 <span class="comment">%     {'mets','metNames','metFormulas','metSps'}),...</span>
+0187 <span class="comment">%     metField);</span>
+0188 <span class="comment">% %rxn-related fields</span>
+0189 <span class="comment">% rxnField = union(setdiff(fieldAll(strncmp('rxn',fieldAll,3)),...</span>
+0190 <span class="comment">%     {'rxns','rxnNames','rxnSps','rxnGeneMat','spBm','spATPM'}),...</span>
+0191 <span class="comment">%     rxnField);</span>
+0192 
+0193 row = 0;
+0194 col = 0;
+0195 <span class="keyword">for</span> j = 1:nSp
+0196     [rowJ, colJ] = size(modelCell{j}.S);
+0197     <span class="comment">%get bounds and objective</span>
+0198     lbJ = modelCell{j}.lb;
+0199     ubJ = modelCell{j}.ub;
+0200     cJ = modelCell{j}.c;
+0201     <span class="keyword">if</span> isfield(modelCell{j}, <span class="string">'metComs'</span>) <span class="comment">%given the mapping to community metabolites</span>
+0202         <span class="keyword">if</span> numel(modelCell{j}.metComs) &lt; numel(modelCell{j}.mets)
+0203             warning(<span class="string">'input model %d: size of metComs &lt; size of mets.'</span>);
+0204             modelCell{j}.metComs(end+1:numel(modelCell{j}.mets)) = {<span class="string">''</span>};
+0205         <span class="keyword">elseif</span> numel(modelCell{j}.metComs) &gt; numel(modelCell{j}.mets)
+0206             warning(<span class="string">'input model %d: size of metComs &gt; size of mets.'</span>);
+0207             modelCell{j}.metComs(numel(modelCell{j}.mets)+1:end) = [];
+0208         <span class="keyword">end</span>
+0209         <span class="comment">%logical vector for extracellular metabolites</span>
+0210         ex{j} = ~cellfun(@isempty, modelCell{j}.metComs);
+0211         modelCell{j}.metComs(ex{j}) = regexprep(modelCell{j}.metComs(ex{j}),<span class="string">'\[[^\[\]]*\]$'</span>,<span class="string">''</span>);
+0212         <span class="comment">%logical vector for exchange reactions</span>
+0213         rxnEx{j} = (sum(modelCell{j}.S(ex{j},:) ~= 0) == 1)' <span class="keyword">...</span>
+0214                 &amp; (sum(modelCell{j}.S(~ex{j},:) ~= 0) == 0)';
+0215         rxnEx2met{j} = zeros(rowJ,2);
+0216     <span class="keyword">elseif</span> ~isempty(metExId) <span class="comment">%using identifier for extracellular mets</span>
+0217         <span class="comment">%logical vector for extracellular metabolites</span>
+0218         ex{j} = cellfun(@(x) ~isempty(strfind(x, metExId)), <span class="keyword">...</span>
+0219             modelCell{j}.mets);
+0220         modelCell{j}.metComs = repmat({<span class="string">''</span>},rowJ,1);
+0221         modelCell{j}.metComs(ex{j}) = regexprep(modelCell{j}.mets(ex{j}),<span class="string">'\[[^\[\]]*\]$'</span>,<span class="string">''</span>);
+0222         <span class="comment">%logical vector for exchange reactions</span>
+0223         rxnEx{j} = (sum(modelCell{j}.S(ex{j},:) ~= 0) == 1)' <span class="keyword">...</span>
+0224                 &amp; (sum(modelCell{j}.S(~ex{j},:) ~= 0) == 0)';
+0225         <span class="comment">%exchange reactions mapped to metabolites</span>
+0226         rxnEx2met{j} = zeros(rowJ,2);
+0227     <span class="keyword">else</span> <span class="comment">%if no identifier, just check exchange reactions</span>
+0228         rxnEx{j} = (sum(modelCell{j}.S ~= 0) == 1)';
+0229         rxnEx2met{j} = zeros(rowJ,2);
+0230         ex{j} = any(modelCell{j}.S(:,rxnEx{j}),2);
+0231         modelCell{j}.metComs = repmat({<span class="string">''</span>},rowJ,1);
+0232         modelCell{j}.metComs(ex{j}) = regexprep(modelCell{j}.mets(ex{j}),<span class="string">'\[[^\[\]]*\]$'</span>,<span class="string">''</span>);
+0233     <span class="keyword">end</span>
+0234     <span class="keyword">for</span> k = 1:colJ
+0235         <span class="keyword">if</span> rxnEx{j}(k)
+0236             metJK = find(modelCell{j}.S(:, k), 1);
+0237             rxnEx2met{j}(metJK,:) = [col + k, k];
+0238             <span class="comment">%set positive flux of exchange reaction as uptake</span>
+0239             <span class="comment">%(convention)</span>
+0240             <span class="keyword">if</span> modelCell{j}.S(metJK, k) &gt; 0
+0241                 s = modelCell{j}.S(metJK,k);
+0242                 modelCell{j}.S(metJK,k) = -1;
+0243                 [ubJ(k), lbJ(k), cJ(k)] = deal(-s * lbJ(k), -s * ubJ(k), cJ(k));
+0244             <span class="keyword">end</span>
+0245         <span class="keyword">end</span>
+0246     <span class="keyword">end</span>
+0247     <span class="comment">%update community metabolites (now the model has .metComs, which has no compartment identifier)</span>
+0248     metsCom = unique([metsCom; modelCell{j}.metComs(ex{j})]);    
+0249     <span class="comment">%stoichiometric matrix</span>
+0250     S = [S                 sparse(row, colJ);<span class="keyword">...</span>
+0251          sparse(rowJ, col) sparse(modelCell{j}.S)];
+0252     <span class="comment">%reversibility, bounds, objective and RHS</span>
+0253     rev = [rev; modelCell{j}.rev];
+0254     lb = [lb; lbJ];
+0255     ub = [ub; ubJ];
+0256     c = [c; cJ];
+0257     b = [b; modelCell{j}.b];
+0258     <span class="comment">%add species's name to rxns and mets (add to the compartment if exist)</span>
+0259     <span class="keyword">if</span> 1
+0260         metJ = regexprep(modelCell{j}.mets,<span class="string">'\]$'</span>,[<span class="string">'_'</span> spAbbr{j} <span class="string">'\]'</span>]);
+0261         metJ(cellfun(@(x) ~strcmp(x(end),<span class="string">']'</span>), metJ)) = strcat(metJ(cellfun(@(x) ~strcmp(x(end),<span class="string">']'</span>), metJ)),<span class="string">'['</span>,spAbbr{j},<span class="string">']'</span>);
+0262         mets = [mets; metJ];
+0263     <span class="keyword">else</span>
+0264         mets = [mets; strcat(modelCell{j}.mets,<span class="string">'['</span>,spAbbr{j},<span class="string">']'</span>)];
+0265     <span class="keyword">end</span>
+0266     rxns = [rxns; strcat(modelCell{j}.rxns,<span class="string">'_'</span>,spAbbr{j})];
+0267     <span class="comment">%incorporate other field</span>
+0268     <span class="keyword">for</span> k = 1:numel(field)
+0269         <span class="keyword">if</span> metFieldL(k)
+0270             str = <span class="string">'mets'</span>;
+0271             sizeCk = rowJ;
+0272         <span class="keyword">elseif</span> rxnFieldL(k)
+0273             str = <span class="string">'rxns'</span>;
+0274             sizeCk = colJ;
+0275         <span class="keyword">else</span>
+0276             <span class="comment">%spField</span>
+0277             str = <span class="string">'1'</span>;
+0278             sizeCk = 1;
+0279         <span class="keyword">end</span>
+0280         <span class="keyword">if</span> isfield(modelCell{j}, field{k})
+0281             <span class="keyword">if</span> spFieldL(k) &amp;&amp; ischar(modelCell{j}.(field{k}))
+0282                 <span class="comment">%If that is a string, put it in a cell.</span>
+0283                 modelCell{j}.(field{k}) = {modelCell{j}.(field{k})};
+0284             <span class="keyword">end</span>
+0285             <span class="comment">%check sizes</span>
+0286             <span class="keyword">if</span> size(modelCell{j}.(field{k}),1) ~= sizeCk
+0287                 <span class="keyword">if</span> size(modelCell{j}.(field{k}),2) == sizeCk
+0288                     fieldJK = modelCell{j}.(field{k})';
+0289                 <span class="keyword">else</span>
+0290                     error(<span class="string">'Dimension of modelCell{%d}.%s (%d,%d) does not match %s (%d).'</span>,<span class="keyword">...</span>
+0291                         j,field{k},size(modelCell{j}.(field{k})),str,sizeCk)
+0292                 <span class="keyword">end</span>
+0293             <span class="keyword">else</span>
+0294                 fieldJK = modelCell{j}.(field{k});
+0295             <span class="keyword">end</span>
+0296             <span class="comment">%assignment</span>
+0297             <span class="keyword">if</span> isempty(modelCom.(field{k}))
+0298                 modelCom.(field{k}) = fieldJK;
+0299             <span class="keyword">else</span>
+0300                 modelCom.(field{k}) = [modelCom.(field{k});fieldJK];
+0301             <span class="keyword">end</span>
+0302         <span class="keyword">else</span>
+0303             <span class="keyword">if</span> isempty(modelCom.(field{k}))
+0304                 <span class="keyword">if</span> fieldNumeric(k)
+0305                     modelCom.(field{k}) = zeros(sizeCk,1);
+0306                 <span class="keyword">elseif</span> fieldCell(k)
+0307                     modelCom.(field{k}) = repmat({<span class="string">''</span>},sizeCk,1);
+0308                 <span class="keyword">elseif</span> fieldStruct(k)
+0309                     modelCom.(field{k}) = repmat(struct(),sizeCk,1);
+0310                 <span class="keyword">end</span>
+0311             <span class="keyword">else</span>
+0312                 <span class="keyword">if</span> fieldNumeric(k)
+0313                     modelCom.(field{k})(end+1:end+sizeCk,:) = 0;
+0314                 <span class="keyword">elseif</span> fieldCell(k)
+0315                     modelCom.(field{k})(end+1:end+sizeCk,:) = {<span class="string">''</span>};
+0316                 <span class="keyword">elseif</span> fieldStruct(k)
+0317                     f = fieldnames(modelCom.(field{k})(end));
+0318                     modelCom.(field{k})(end+1:end+sizeCk,:) = <span class="keyword">...</span>
+0319                         repmat(cell2struct(repmat({[]},numel(f),1),f),sizeCk,1);
+0320                 <span class="keyword">end</span>
+0321             <span class="keyword">end</span>
+0322         <span class="keyword">end</span>
+0323     <span class="keyword">end</span>
+0324     
+0325     <span class="comment">%species specific rxns and mets</span>
+0326     rxnSps = [rxnSps; j * ones(colJ,1)];
+0327     metSps = [metSps; j * ones(rowJ,1)];
+0328     <span class="comment">%biomass rxn ID</span>
+0329     spBmId(j) = col + spBm(j);
+0330     spATPM(j) = col + spATPM(j);
+0331     <span class="comment">%size of the network</span>
+0332     row = row + rowJ;
+0333     col = col + colJ;
+0334 <span class="keyword">end</span>
+0335 
+0336 <span class="comment">%% Community metabolites</span>
+0337 metsCom = sort(unique(metsCom));
+0338 <span class="comment">%Ids of exchange reactions corresponding to community metabolites</span>
+0339 <span class="comment">% [a_ij] = exchange reaction Id for community metabolite i and species j</span>
+0340 EXsp = zeros(numel(metsCom), nSp);
+0341 Msp = zeros(numel(metsCom), nSp);
+0342 [rowS,colS,entryS] = deal([]);
+0343 <span class="keyword">for</span> kSp = 1:nSp
+0344     <span class="comment">%organism-community exchange reactions</span>
+0345     [r0,c0,e0] = find(modelCell{kSp}.S);
+0346     modelCell{kSp}.metComs(cellfun(@isempty,modelCell{kSp}.metComs)) = {<span class="string">''</span>};
+0347     [yn,id] = ismember(modelCell{kSp}.metComs,metsCom);
+0348     rowS = [rowS; id(yn)];
+0349     colS = [colS; rxnEx2met{kSp}(yn,1)];
+0350     [yn2,id2] = ismember([find(yn),rxnEx2met{kSp}(yn,2)],[r0,c0],<span class="string">'rows'</span>);
+0351     entryS = [entryS; -e0(id2)];
+0352     EXsp(id(yn),kSp) = rxnEx2met{kSp}(yn,1);
+0353     Msp(id(yn),kSp) = find(metSps == kSp, 1) - 1 + find(yn);
+0354 <span class="keyword">end</span>
+0355 <span class="comment">%community uptake/export reactions</span>
+0356 rowS = [rowS; repmat((1:numel(metsCom))',2,1)];
+0357 colS = [colS; ((col + 1):(col + 2*numel(metsCom)))'];
+0358 entryS = [entryS; ones(numel(metsCom),1); -ones(numel(metsCom),1)];
+0359 SmetCom = sparse(rowS,colS,entryS,numel(metsCom),col+2*numel(metsCom));
+0360 <span class="comment">% %new submatrix for balancing community metabolites</span>
+0361 <span class="comment">% SmetCom = sparse(numel(metsCom), col + 2 * numel(metsCom));</span>
+0362 <span class="comment">% for j = 1:numel(metsCom)</span>
+0363 <span class="comment">%     for kSp = 1:nSp</span>
+0364 <span class="comment">%         %for each community metabolite, for each species, find the row of</span>
+0365 <span class="comment">%         %the corresponding extracellular metabolite</span>
+0366 <span class="comment">%         metJK = find(strcmp(modelCell{kSp}.metComs, metsCom{j}),1);</span>
+0367 <span class="comment">%         if ~isempty(metJK) %if it is found</span>
+0368 <span class="comment">%             %update the stoichiometric matrix</span>
+0369 <span class="comment">%             SmetCom(j, rxnEx2met{kSp}(metJK, 1)) = - modelCell{kSp}.S(metJK, rxnEx2met{kSp}(metJK, 2));</span>
+0370 <span class="comment">%             EXsp(j, kSp) = rxnEx2met{kSp}(metJK, 1);</span>
+0371 <span class="comment">%         end</span>
+0372 <span class="comment">%     end</span>
+0373 <span class="comment">%     %add two reactions for uptake of and export from the community.</span>
+0374 <span class="comment">%     SmetCom(j, [col + j, col + numel(metsCom) + j]) = [1 -1];</span>
+0375 <span class="comment">% end</span>
+0376 
+0377 S = [S sparse([],[],[], row, 2*numel(metsCom)); SmetCom];
+0378 b = [b; zeros(numel(metsCom),1)];
+0379 <span class="comment">%For non-limiting substrate for uptake, if the lower bound for uptake is high (say</span>
+0380 <span class="comment">% 1000), then the upper bound of the corresponding export reaction of the</span>
+0381 <span class="comment">% community metabolites should be significantly larger (say 10000) in order</span>
+0382 <span class="comment">% not to overconstrain the community in the way that it is not allowed to</span>
+0383 <span class="comment">% produce those metabolites</span>
+0384 ub = [ub; zeros(numel(metsCom), 1); 10000 * ones(numel(metsCom),1)];
+0385 lb = [lb; zeros(2*numel(metsCom),1)];
+0386 c = [c;  zeros(2*numel(metsCom),1)];
+0387 rev = [rev;  zeros(2*numel(metsCom),1)];
+0388 rxnSps = [rxnSps; zeros(2*numel(metsCom),1)];
+0389 metSps = [metSps; zeros(numel(metsCom),1)];
+0390 
+0391 <span class="comment">%names of community metabolites</span>
+0392 mets = [mets; strcat(metsCom,<span class="string">'[u]'</span>)];
+0393 <span class="comment">%names of community exchange reactions</span>
+0394 rxns = [rxns; strcat(<span class="string">'UT_'</span>,metsCom,<span class="string">'(u)'</span>); strcat(<span class="string">'EX_'</span>,metsCom,<span class="string">'(u)'</span>)];
+0395 
+0396 [modelCom.rxns, modelCom.mets, modelCom.S, modelCom.c, modelCom.lb, <span class="keyword">...</span>
+0397     modelCom.ub, modelCom.b, modelCom.rev] =<span class="keyword">...</span>
+0398     deal(rxns, mets, S, c, lb, ub, b, rev);
+0399 <span class="comment">%get community reaction indices</span>
+0400 indCom = struct();
+0401 
+0402 rxnSD = sum(modelCom.S ~= 0, 1) &lt;= 1;
+0403 rxnSD((col + 1) : (col + 2*numel(metsCom))) = false;
+0404 rxnSD = find(rxnSD);
+0405 <span class="comment">%reaction Ids for [uptake | export] of community metabolites</span>
+0406 EXcom = [(col + 1: col + numel(metsCom))' <span class="keyword">...</span>
+0407                     (col + numel(metsCom) + 1: col + 2 * numel(metsCom))'];
+0408 [indCom.spBm, indCom.spATPM, indCom.rxnSD, indCom.EXcom, indCom.EXsp,<span class="keyword">...</span>
+0409     indCom.Mcom, indCom.Msp, indCom.rxnSps, indCom.metSps] = deal(<span class="keyword">...</span>
+0410     spBmId, spATPM, rxnSD, EXcom, EXsp, <span class="keyword">...</span>
+0411     ((row + 1) : (row + numel(metsCom)))', Msp, rxnSps, metSps);
+0412 
+0413 
+0414 <span class="comment">%add rxnNames if exist</span>
+0415 <span class="keyword">if</span> ~isfield(modelCom, <span class="string">'rxnNames'</span>)
+0416     modelCom.rxnNames = modelCom.rxns;
+0417 <span class="keyword">else</span>
+0418     <span class="keyword">if</span> numel(modelCom.rxnNames) ~= col
+0419         modelCom.rxnNames(col + 1: col + 2*numel(metsCom)) = modelCom.rxns(col + 1: col + numel(metsCom)*2);
+0420     <span class="keyword">else</span>
+0421         <span class="keyword">for</span> j = 1:numel(metsCom)
+0422             rxnNameLength = zeros(nSp, 1);
+0423             <span class="keyword">for</span> k = 1:nSp
+0424                 <span class="keyword">if</span> EXsp(j,k) &gt; 0
+0425                     rxnNameLength(k) = length(modelCom.rxnNames{EXsp(j,k)});
+0426                 <span class="keyword">end</span>
+0427             <span class="keyword">end</span>
+0428             [maxLength, maxLengthId] = max(rxnNameLength);
+0429             <span class="keyword">if</span> maxLength &gt; 0
+0430                 rxnNameJ = modelCom.rxnNames{EXsp(j,maxLengthId)};
+0431                 <span class="keyword">if</span> ~isempty(strfind(rxnNameJ, <span class="string">'exchange'</span>))
+0432                     rxnNameJut = strrep(rxnNameJ, <span class="string">'exchange'</span>, <span class="string">'(community uptake)'</span>);
+0433                     rxnNameJex = strrep(rxnNameJ, <span class="string">'exchange'</span>, <span class="string">'(community export)'</span>);
+0434                 <span class="keyword">else</span>
+0435                     rxnNameJut = strcat(rxnNameJ, <span class="string">' (community uptake)'</span>);
+0436                     rxnNameJex = strcat(rxnNameJ, <span class="string">' (community export)'</span>);
+0437                 <span class="keyword">end</span>
+0438                 modelCom.rxnNames{col + j} = rxnNameJut;
+0439                 modelCom.rxnNames{col + numel(metsCom) + j} = rxnNameJex;
+0440             <span class="keyword">else</span>
+0441                 modelCom.rxnNames{col + j} = modelCom.rxns{col + j};
+0442                 modelCom.rxnNames{col + numel(metsCom) + j} = modelCom.rxns{col + numel(metsCom) + j};
+0443             <span class="keyword">end</span>
+0444         <span class="keyword">end</span>
+0445     <span class="keyword">end</span>
+0446 <span class="keyword">end</span>
+0447 <span class="comment">%add metNames, metFormulas and other metField if exist</span>
+0448 <span class="keyword">if</span> ~isfield(modelCom, <span class="string">'metFormulas'</span>)
+0449     modelCom.metFormulas = repmat({<span class="string">''</span>}, row + numel(metsCom), 1);
+0450 <span class="keyword">end</span>
+0451 <span class="keyword">if</span> ~isfield(modelCom, <span class="string">'metNames'</span>)
+0452     modelCom.metNames = modelCom.mets;
+0453 <span class="keyword">else</span>
+0454     <span class="keyword">if</span> numel(modelCom.metNames) ~= row
+0455         modelCom.metNames(row + 1: row + numel(metsCom)) = modelCom.mets(row + 1: row + numel(metsCom));
+0456     <span class="keyword">else</span>
+0457         <span class="keyword">for</span> j = 1:numel(metsCom)
+0458 <span class="comment">%             metNameLength = zeros(nSp, 1);</span>
+0459             metNameId = zeros(nSp, 1);
+0460             metNameJ = {};
+0461             metForm = <span class="string">''</span>;
+0462             <span class="comment">%get all names, put in cell array</span>
+0463             <span class="keyword">for</span> k = 1:nSp
+0464                 <span class="keyword">if</span> EXsp(j,k) &gt; 0
+0465                     metEUid = modelCom.S(:,EXsp(j,k)) ~= 0;
+0466                     metEUid(row + j) = false;
+0467                     metNameId(k) = find(metEUid, 1);
+0468                     metNameJK = modelCom.metNames{metNameId(k)};
+0469                     metNameJK = strrep(strrep(metNameJK, <span class="string">'(extracellular)'</span>, <span class="string">''</span>), <span class="string">'(Extracellular)'</span>, <span class="string">''</span>);
+0470                     metNameJK = strrep(strrep(metNameJK, <span class="string">'extracellular'</span>, <span class="string">''</span>), <span class="string">'Extracellular'</span>, <span class="string">''</span>);
+0471                     metNameJK = unique(strtrim(splitString(strtrim(metNameJK),<span class="string">';'</span>)))';
+0472                     metNameJ = [metNameJ metNameJK];
+0473                     <span class="keyword">if</span> isfield(modelCom, <span class="string">'metFormulas'</span>) &amp;&amp; isempty(metForm)
+0474                         metForm = strtrim(modelCom.metFormulas{metNameId(k)});
+0475                     <span class="keyword">end</span>
+0476                 <span class="keyword">end</span>
+0477             <span class="keyword">end</span>
+0478             modelCom.metFormulas{row + j} = metForm;
+0479             metNameJ = unique(metNameJ);
+0480             <span class="comment">%remove those are contained totally in another name</span>
+0481             <span class="comment">%             k = 1;</span>
+0482             <span class="comment">%             while k &lt;= numel(metNameJ)</span>
+0483             <span class="comment">%                 if any(cellfun(@(x) ~isempty(strfind(x, lower(metNameJ{k}))), lower(metNameJ([1:k-1 k+1:end]))))</span>
+0484             <span class="comment">%                     %if totally contained, delete it</span>
+0485             <span class="comment">%                     metNameJ(k) = [];</span>
+0486             <span class="comment">%                 else</span>
+0487             <span class="comment">%                     k = k + 1;</span>
+0488             <span class="comment">%                 end</span>
+0489             <span class="comment">%             end</span>
+0490             metNameLength = cellfun(@length,metNameJ);
+0491             <span class="keyword">if</span> ~isempty(metNameLength)
+0492                 metNameJ = metNameJ(metNameLength &gt; 0);
+0493             <span class="keyword">end</span>
+0494             <span class="keyword">if</span> ~isempty(metNameJ)
+0495                 <span class="keyword">if</span> iscell(metNameJ) &amp;&amp; numel(metNameJ) == 1
+0496                     modelCom.metNames{row + j} = metNameJ{1};
+0497                 <span class="keyword">else</span>
+0498                     modelCom.metNames{row + j} = strjoin(metNameJ,<span class="string">'|'</span>);
+0499                 <span class="keyword">end</span>
+0500             <span class="keyword">else</span>
+0501                 modelCom.metNames{row + j} = modelCom.mets{row + j};
+0502             <span class="keyword">end</span>
+0503             <span class="keyword">for</span> kF = 1:numel(metField)
+0504                 modelCom.(metField{kF})(row + j) = modelCom.(metField{kF})(metEUid);
+0505             <span class="keyword">end</span>
+0506                 
+0507 <span class="comment">%             for k = 1:nSp</span>
+0508 <span class="comment">%                 if modelCom.EXsp(j,k) &gt; 0</span>
+0509 <span class="comment">%                     metEUid = modelCom.S(:,modelCom.EXsp(j,k)) ~= 0;</span>
+0510 <span class="comment">%                     metEUid(row + j) = false;</span>
+0511 <span class="comment">%                     metNameId(k) = find(metEUid, 1);</span>
+0512 <span class="comment">%                     metNameLength(k) = length(modelCom.metNames{metNameId(k)});</span>
+0513 <span class="comment">%                 end</span>
+0514 <span class="comment">%             end</span>
+0515 <span class="comment">%             [maxLength, maxLengthId] = max(metNameLength);</span>
+0516 <span class="comment">%             if maxLength &gt; 0</span>
+0517 <span class="comment">%                 modelCom.metNames{row + j} = modelCom.metNames{metNameId(maxLengthId)};</span>
+0518 <span class="comment">%             else</span>
+0519 <span class="comment">%                 modelCom.metNames{row + j} = modelCom.mets{row + j};</span>
+0520 <span class="comment">%             end</span>
+0521         <span class="keyword">end</span>
+0522     <span class="keyword">end</span>
+0523 <span class="keyword">end</span>
+0524 <span class="keyword">if</span> isfield(modelCom,<span class="string">'subSystems'</span>)
+0525     modelCom.subSystems(col + 1: col + numel(metsCom)*2) = repmat({<span class="string">'community exchange'</span>},2*numel(metsCom),1);
+0526 <span class="keyword">end</span>
+0527 <span class="comment">%extend all other fields</span>
+0528 uMet = zeros(numel(metsCom),1);
+0529 <span class="keyword">for</span> jM = 1:numel(metsCom)
+0530     uMet(jM) = Msp(jM,find(Msp(jM,:),1));
+0531 <span class="keyword">end</span>
+0532 <span class="keyword">for</span> j = 1:numel(field)
+0533     <span class="keyword">if</span> metFieldL(j) || rxnFieldL(j)
+0534         <span class="keyword">if</span> metFieldL(j) &amp;&amp; ~any(strcmp({<span class="string">'metNames'</span>,<span class="string">'metFormulas'</span>},field{j}))
+0535             v = row + 1: row + numel(metsCom);
+0536             modelCom.(field{j})(v,:) = modelCom.(field{j})(uMet,:);
+0537         <span class="keyword">elseif</span> rxnFieldL(j) &amp;&amp; ~any(strcmp({<span class="string">'subSystems'</span>,<span class="string">'rxnNames'</span>},field{j}))
+0538             v = col + 1: col + numel(metsCom)*2;
+0539             <span class="keyword">if</span> fieldNumeric(j)
+0540                 u = 0;
+0541             <span class="keyword">elseif</span> fieldCell(j)
+0542                 u = {<span class="string">''</span>};
+0543             <span class="keyword">elseif</span> fieldStruct(j)
+0544                 f = fieldnames(modelCom.(field{j}));
+0545                 u = cell2struct(repmat({[]},numel(f),1),f);
+0546             <span class="keyword">end</span>
+0547             modelCom.(field{j})(v,:) = u;
+0548         <span class="keyword">end</span>
+0549     <span class="keyword">end</span>
+0550 <span class="keyword">end</span>
+0551 <span class="comment">%get community info</span>
+0552 infoCom = <a href="../SteadyCom/auxiliary_functions/infoCom2indCom.html" class="code" title="function indCom = infoCom2indCom(modelCom,infoCom,revFlag,spAbbr,spName)">infoCom2indCom</a>(modelCom,indCom,true,spAbbr,spName);
+0553 
+0554 <span class="comment">%special care for genes and rxnGeneMat</span>
+0555 [rGMrow,rGMcol,rGMent] = deal([]);
+0556 rGMm = 0;
+0557 rGMn = 0;
+0558 genes = {};
+0559 <span class="keyword">for</span> jSp = 1:nSp
+0560     <span class="keyword">if</span> ~isfield(modelCell{jSp},<span class="string">'genes'</span>)
+0561         modelCell{jSp}.genes = {};
+0562     <span class="keyword">end</span>
+0563     <span class="keyword">if</span> ~isfield(modelCell{jSp},<span class="string">'rxnGeneMat'</span>)
+0564         modelCell{jSp}.rxnGeneMat = sparse(size(modelCell{jSp}.S,2),numel(modelCell{jSp}.genes));
+0565     <span class="keyword">end</span>
+0566     <span class="keyword">if</span> size(modelCell{jSp}.rxnGeneMat,1) ~= size(modelCell{jSp}.S,2)
+0567         warning(<span class="string">'#%d (%s): No. of rows in rxnGeneMat not equal to the number of reactions.'</span>,jSp,modelCom.sps{jSp});
+0568     <span class="keyword">end</span>
+0569     <span class="keyword">if</span> numel(modelCell{jSp}.genes) &lt; size(modelCell{jSp}.rxnGeneMat,2)
+0570         warning(<span class="string">'#%d (%s): No. of columns in rxnGeneMat not equal to the number of genes.'</span>,jSp,modelCom.sps{jSp});
+0571         modelCell{jSp}.genes(end+1:size(modelCell{jSp}.rxnGeneMat,2)) = {<span class="string">''</span>};
+0572     <span class="keyword">elseif</span> numel(modelCell{jSp}.genes) &gt; size(modelCell{jSp}.rxnGeneMat,2)
+0573         warning(<span class="string">'#%d (%s): No. of columns in rxnGeneMat not equal to the number of genes.'</span>,jSp,modelCom.sps{jSp});
+0574         modelCell{jSp}.rxnGeneMat(:,end+1:numel(modelCell{jSp}.genes)) = 0;
+0575     <span class="keyword">end</span>
+0576     genes = [genes; modelCell{jSp}.genes(:)];
+0577     [rGMrowJ,rGMcolJ,rGMentJ] = find(modelCell{jSp}.rxnGeneMat);
+0578     rGMrow = [rGMrow; (rGMrowJ+rGMm)];
+0579     rGMcol = [rGMcol; (rGMcolJ+rGMn)];
+0580     rGMent = [rGMent; rGMentJ];
+0581     rGMm = rGMm + size(modelCell{jSp}.rxnGeneMat,1);
+0582     rGMn = rGMn + size(modelCell{jSp}.rxnGeneMat,2);
+0583 <span class="keyword">end</span>
+0584 modelCom.genes = genes;
+0585 modelCom.rxnGeneMat = sparse(rGMrow,rGMcol,rGMent,size(modelCom.S,2),rGMn);
+0586 <span class="comment">% add infoCom and indCom into modelCom</span>
+0587 modelCom.infoCom = infoCom;
+0588 modelCom.indCom = indCom;
+0589 <span class="keyword">end</span>
+0590     
+0591</pre></div>
+<hr><address>Generated on Sat 06-May-2017 09:26:04 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

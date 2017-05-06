@@ -1,6 +1,10 @@
 function [modelCom,infoCom,indCom] = createCommModel(modelCell, options)
-%Create a community COBRA model.
-%[modelCom] = createCommModel(modelCell,options)
+%Create a community COBRA model. The model has an extra compartment [u] 
+%for inter-organism and community exchange, i.e.,
+% (environment) <=> [u] <=> [e_organism1]
+%                       <=> [e_organism2] ...
+%
+%[modelCom,infoCom,indCom] = createCommModel(modelCell,options)
 %
 %INPUT
 % modelCell:    Cell array of COBRA model (e.g., {model1, model2, model3})
@@ -13,14 +17,19 @@ function [modelCom,infoCom,indCom] = createCommModel(modelCell, options)
 % options:      Structure containing the following fields
 %     spBm:     Cell array of reaction names of the biomass reaction in
 %               each model in 'modelCell'
-%     (below are optional, but recommended to provide)
+%   (below are optional, but recommended to provide)
 %     spAbbr:   Cell array of abbrivation for each organism in modelCell
 %     spName:   Full names of the species
 %     spATPM:   Cell array of reaction names of the ATP maintenance reaction in
 %               each model in 'modelCell'
+%    ('sp' originally for 'species')
 %     metExId:  Identifier for extracellular metabolites metabolites (default '[e]')
 %               If input is the empty string (''), find all metabolites that have exchange reactions
-%    ('sp' originally for 'species')
+%     rxnField: Cell array of field names in the models that have the same
+%               size as rxns. Default to include all fields starting
+%               with 'rxn' and include 'grRules', 'rules', 'confidenceScores', 'subSystems'
+%     metField: Cell array of field names in the models that have the same
+%               size as mets. Default to include all fields starting with 'met'
 %
 %OUTPUT
 % modelCom:     COBRA community model with the following extra fields
@@ -73,7 +82,7 @@ if isstruct(modelCell)
     modelCell = struct2cell(modelCell);
 else
     if isempty(spAbbr)
-        nameSpecies = ture;
+        nameSpecies = true;
     end
 end
 nSp = numel(modelCell);

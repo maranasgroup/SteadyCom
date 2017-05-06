@@ -1,10 +1,10 @@
-function [minFlux,maxFlux,minFD,maxFD,LP,GR] = FVAComGRCplex(modelCom,options,solverParam,LP)
+function [minFlux,maxFlux,minFD,maxFD,LP,GR] = SteadyComFVAgrCplex(modelCom,options,solverParam,LP)
 %Flux variability analysis for community model at community steady-state at a given growth rate. 
 %The function is capable of saving intermediate results and continuing from previous results 
 %if the file path is given in options.saveFVA. It also allows switch from single thread to parallel 
 %computation from intermediate results (but not the reverse).
 %
-%[minFlux,maxFlux,minFD,maxFD,LP,GR] = FVAComGRCplex(modelCom,options,solverParam,LP)
+%[minFlux,maxFlux,minFD,maxFD,LP,GR] = SteadyComFVAgrCplex(modelCom,options,solverParam,LP)
 %
 %INPUT
 % modelCom        a community COBRA model structure with the following extra fields:
@@ -38,7 +38,7 @@ function [minFlux,maxFlux,minFD,maxFD,LP,GR] = FVAComGRCplex(modelCom,options,so
 %  (other parameters)
 %   saveFVA         If non-empty, become the filename to save the FVA results
 %                   (default empty, not saving)
-%   threads         > 1 for explicitly stating the no. of threads used in FVA,
+%   threads         > 1 for explicitly stating the no. of threads used,
 %                   0 or -1 for using all available threads. Default 1.
 %   verbFlag        Verbose output. 1 to have waitbar, >1 to have stepwise output
 %                   (default 3)

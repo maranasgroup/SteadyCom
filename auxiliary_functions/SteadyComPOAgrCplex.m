@@ -1,6 +1,6 @@
-function [POAtable, fluxRange, Stat, pairList] = POAComGRCplex(modelCom,options,solverParam,LP)
+function [POAtable, fluxRange, Stat, pairList] = SteadyComPOAgrCplex(modelCom,options,solverParam,LP)
 %Pairwise POA for community model at community steady-state at a given growth rate
-%[POAtable, fluxRange, Stat, pairList] = POAComGRCplex(modelCom,options,solverParam,LP)
+%[POAtable, fluxRange, Stat, pairList] = SteadyComPOAgrCplex(modelCom,options,solverParam,LP)
 %
 %INPUT
 % modelCom        a community COBRA model structure with the following extra fields:
@@ -16,12 +16,12 @@ function [POAtable, fluxRange, Stat, pairList] = POAComGRCplex(modelCom,options,
 %   indCom       the index structure corresponding to infoCom
 %
 % options (optional) option structure with the following fields:
-%   GR              The growth rate at which FVAcom is performed. If not
+%   GR              The growth rate at which POA is performed. If not
 %                     given, find the maximum growth rate.
 %   optBMpercent    Only consider solutions that yield at least a certain
 %                     percentage of the optimal biomass (Default = 95)
 %   rxnNameList     List of reactions (IDs or .rxns) to be analyzed.
-%                     Use a (N_rxns + N_organism) x K matrix for FVA of K
+%                     Use a (N_rxns + N_organism) x K matrix for POA of K
 %                     linear combinations of fluxes and/or abundances
 %                     (Default = biomass reaction of each species)
 %   pairList        Pairs in rxnNameList to be analyzed. N_pair by 2 array of:
@@ -41,11 +41,11 @@ function [POAtable, fluxRange, Stat, pairList] = POAComGRCplex(modelCom,options,
 %                     -'lin' for a linear (uniform) scale of step size 
 %                     -'log' for a log scaling of the step sizes
 %   fluxRange       Flux range for each entry in rxnNameList. K x 2 matrix.
-%                   Defaulted to be found by FVAGRcomCplex.m
+%                   Defaulted to be found by SteadyComFVACplex.m
 %  (other parameters)
 %   savePOA         Must be non-empty. The filename to save the POA results
 %                   (default 'POAtmp/POA')
-%   threads         > 1 for explicitly stating the no. of threads used in FVA,
+%   threads         > 1 for explicitly stating the no. of threads used,
 %                   0 or -1 for using all available threads. Default 1.
 %   verbFlag        Verbose output. 0 or 1.
 %   loadModel       String of filename to be loaded. If non-empty, load the 
@@ -86,7 +86,7 @@ if ~exist('solverParam', 'var') || isempty(solverParam)
     solverParam = getCobraComParams('CplexParam');
 end
 param2get = {'GRfx','GR', 'BMmaxLB','BMmaxUB','optBMpercent',... %parameters for finding maximum growth rate
-             'symmetric','rxnNameList','pairList', 'fluxRange', 'Nstep', 'NstepScale',... %parameters for pairwise FVA
+             'symmetric','rxnNameList','pairList', 'fluxRange', 'Nstep', 'NstepScale',... %parameters for POA
              'verbFlag', 'threads', 'savePOA','loadModel',...
              };
 eval(sprintf('[%s] = getCobraComParams(param2get, options, modelCom);', ...
@@ -330,7 +330,7 @@ if any(undone)
         optionsFVA.rxnNameList = objList;
         optionsFVA.GR = GR;
         fluxRange = zeros(size(objList,2),2);
-        [fluxRange(:,1), fluxRange(:,2)] = FVAComGRCplex(modelCom,optionsFVA,solverParam,LP);
+        [fluxRange(:,1), fluxRange(:,2)] = SteadyComFVAgrCplex(modelCom,optionsFVA,solverParam,LP);
         printFluxRange = false;
         if ~isempty(savePOA)
             save(sprintf('%s_POApre.mat',savePOA),'fluxRange','GR','options',...

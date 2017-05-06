@@ -1,13 +1,13 @@
-function [minFlux,maxFlux,minFD,maxFD, GRvector, result,LP] = FVAComCplex(modelCom,options,solverParam)
+function [minFlux,maxFlux,minFD,maxFD, GRvector, result,LP] = SteadyComFVACplex(modelCom,options,solverParam)
 %Flux variability analysis for community model at community steady-state for a range of growth rates. 
 %The function is capable of saving intermediate results and continuing from previous results 
 %if the file path is given in options.saveFVA. It also allows switch from single thread to parallel 
 %computation from intermediate results (but not the reverse).
 %
-%[minFlux,maxFlux,Vmin,Vmax] = FVAComCplex(modelCom,options,solverParam)
+%[minFlux,maxFlux,Vmin,Vmax] = SteadyComFVACplex(modelCom,options,solverParam)
 %
 %INPUT
-% modelCom        a community COBRA model structure with the following extra fields:
+% modelCom       A community COBRA model structure with the following extra fields:
 % (the following fields are required - others can be supplied)
 %   S            Stoichiometric matrix
 %   b            Right hand side
@@ -40,7 +40,7 @@ function [minFlux,maxFlux,minFD,maxFD, GRvector, result,LP] = FVAComCplex(modelC
 %   (other parameters)
 %   saveFVA         If non-empty, become the filename to save the FVA results
 %                   (default empty, not saving)
-%   threads         > 1 for explicitly stating the no. of threads used in FVA,
+%   threads         > 1 for explicitly stating the no. of threads used,
 %                   0 or -1 for using all available threads. Default 1.
 %   verbFlag        Verbose output. 1 to have waitbar, >1 to have stepwise output
 %                   (default 3)
@@ -164,7 +164,7 @@ else
         %get LP using SteadyComCplex if only growth rate is given 
         options2 = options;
         options2.LPonly = true;
-        [~, ~, LP] = FVAComGRCplex(modelCom, options2, solverParam);
+        [~, ~, LP] = SteadyComCplex(modelCom, options2, solverParam);
         %no constraint on total biomass using LPonly option
         addRow = true;
     end
@@ -274,7 +274,7 @@ for j = 1:numel(GRvector)
     if ~isempty(saveFVA)
         optionsJ.saveFVA = sprintf(['%s_GR%.' num2str(kDisp) 'f'], saveFVA, GRvector(j));  
     end
-    [minFluxJ,maxFluxJ,minFDj,maxFDj,LP] = FVAComGRCplex(modelCom,optionsJ, solverParam,LP);
+    [minFluxJ,maxFluxJ,minFDj,maxFDj,LP] = SteadyComFVAgrCplex(modelCom,optionsJ, solverParam,LP);
     minFlux(:, j) = minFluxJ;
     maxFlux(:, j) = maxFluxJ;
     minFD(:,:, j) = minFDj;

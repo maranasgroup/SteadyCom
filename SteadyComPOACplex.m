@@ -1,9 +1,9 @@
-function [POAtable, fluxRange, Stat, GRvector] = POAComCplex(modelCom,options,solverParam)
+function [POAtable, fluxRange, Stat, GRvector] = SteadyComPOACplex(modelCom,options,solverParam)
 %Pairwise POA for community model at community steady-state for a range of growth rates
-%[POAtable, fluxRange, Stat, GRvector] = POAComCplex(modelCom,options,solverParam)
+%[POAtable, fluxRange, Stat, GRvector] = SteadyComPOACplex(modelCom,options,solverParam)
 %
 %INPUT
-% modelCom        a community COBRA model structure with the following extra fields:
+% modelCom       A community COBRA model structure with the following extra fields:
 % (the following fields are required - others can be supplied)
 %   S            Stoichiometric matrix
 %   b            Right hand side
@@ -18,12 +18,12 @@ function [POAtable, fluxRange, Stat, GRvector] = POAComCplex(modelCom,options,so
 % options (optional) option structure with the following fields:
 %   GRmax           Maximum growth rate of the model (default to be found
 %                     SteadyComCplex.m)
-%   optGRpercent    A vector of percentages. Perform FVA at these percents
+%   optGRpercent    A vector of percentages. Perform POA at these percents
 %                     of max. growth rate respectively (Default = 99.99)
 %   optBMpercent    Only consider solutions that yield at least a certain
 %                     percentage of the optimal biomass (Default = 95)
 %   rxnNameList     List of reactions (IDs or .rxns) to be analyzed.
-%                     Use a (N_rxns + N_organism) x K matrix for FVA of K
+%                     Use a (N_rxns + N_organism) x K matrix for POA of K
 %                     linear combinations of fluxes and/or abundances
 %                     (Default = biomass reaction of each species)
 %   pairList        Pairs in rxnNameList to be analyzed. N_pair by 2 array of:
@@ -43,11 +43,11 @@ function [POAtable, fluxRange, Stat, GRvector] = POAComCplex(modelCom,options,so
 %                     -'lin' for a linear (uniform) scale of step size 
 %                     -'log' for a log scaling of the step sizes
 %   fluxRange       Flux range for each entry in rxnNameList. K x 2 matrix.
-%                     Defaulted to be found by FVAGRcomCplex.m
+%                     Defaulted to be found by SteadyComFVACplex.m
 %  (other parameters)
 %   savePOA         Must be non-empty. The filename to save the POA results
 %                     (default 'POAtmp/POA')
-%   threads         > 1 for explicitly stating the no. of threads used in FVA,
+%   threads         > 1 for explicitly stating the no. of threads used,
 %                     0 or -1 for using all available threads. Default 1.
 %   verbFlag        Verbose output. 0 or 1.
 %   loadModel       String of filename to be loaded. If non-empty, load the 
@@ -308,7 +308,7 @@ for j = 1:numel(GRvector)
         LP = setCplexParam(LP, solverParam);
     end
     clear LPmodel LPstart
-    POAComGRCplex(modelCom,optionsJ,solverParam,LP);
+    SteadyComPOAgrCplex(modelCom,optionsJ,solverParam,LP);
 end
 
 %collect output from save file

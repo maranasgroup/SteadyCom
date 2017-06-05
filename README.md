@@ -1,7 +1,7 @@
 # SteadyCom
 Computing the maximum growth rate of a microbial community at community steady-state.
-Ref:
-Chan SHJ, Simons MN, Maranas CD. (Accepted) SteadyCom: Predicting Microbial Abundances while Ensuring Community Stability. PLOS Comput Biol.
+
+Chan SHJ, Simons MN, Maranas CD (2017) SteadyCom: Predicting microbial abundances while ensuring community stability. PLoS Comput Biol 13(5): e1005539. https://doi.org/10.1371/journal.pcbi.1005539
 
 Main functions:
 

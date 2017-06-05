@@ -12,7 +12,9 @@ function [sol, result, LP, LP2,indLP] = SteadyComCplex(modelCom,options, solverP
 %   c            Objective coefficients
 %   lb           Lower bounds
 %   ub           Upper bounds
+% (at least one of the below two is needed)
 %   infoCom      structure containing community reaction info 
+%   indCom       the index structure corresponding to infoCom
 %                (returned along with the community model created with createCommModel) 
 %
 % options (optional)   struct with the following possible fields:
@@ -108,12 +110,14 @@ t = tic;
 t0 = 0;
 %% Initialization
 %check required fields for community model
-if ~isfield(modelCom,'infoCom') || ~isstruct(modelCom.infoCom) || ...
-        ~all(isfield(modelCom.infoCom,{'spBm','EXcom','EXsp','spAbbr','rxnSps','metSps'}))
-    error('infoCom must be provided for calculating the max. community growth rate.\n');
+if ~isfield(modelCom,'indCom')
+    if ~isfield(modelCom,'infoCom') || ~isstruct(modelCom.infoCom) || ...
+            ~all(isfield(modelCom.infoCom,{'spBm','EXcom','EXsp','spAbbr','rxnSps','metSps'}))
+        error('infoCom must be provided for calculating the max. community growth rate.\n');
+    end
+    %get useful reaction indices
+    modelCom.indCom = infoCom2indCom(modelCom);
 end
-%get useful reaction indices
-modelCom.indCom = infoCom2indCom(modelCom);
 
 %get paramters
 if ~exist('options', 'var')
@@ -492,7 +496,7 @@ else
                 dBMneg = LP4fzero(grLBrecord(end - 1), LP);
                 dBMpos = LP4fzero(grLB, LP);
                 grUnstable = [grUnstable; grLB];
-                numInstab = true;
+                numInstab = true; %unstable
                 %reset the bounds
                 if dBMpos > 0 %keep infeasible even optimizing again provided the previous lower bound basis
                     grUB = grLB;
@@ -516,7 +520,7 @@ else
                 grUBrecord(end) = grUB;
                 grLBrecord(end) = grLB;
                 BMcur = BMequiv - dBMpos;
-                numInstab = true;
+                numInstab = true; %unstable
                 break
             else
                 % normal situation
@@ -639,6 +643,7 @@ while ~condition2(BMcur, GRmax) && GRmax > GRtol && kGRadjust <= 10
         fprintf('GRmax adjusment: %d\n',kGRadjust);
     end
 end
+%corrected solution not feasible
 numInstab2 = ~condition2(BMcur, GRmax) && GRmax > GRtol;
 %confirm the maximum growth rate 
 result.GRmax = GRmax;
@@ -698,6 +703,7 @@ while (~isfield(LP.Solution, 'x') || dev > feasTol) && kBMadjust < 10
         fprintf('BMmax adjusment: %d\n',kBMadjust);
     end
 end
+%solution after adding the biomass constraint becomes infeasible
 numInstab3 = ~isfield(LP.Solution, 'x') || dev > feasTol;
 
 LP2 = [];
@@ -736,11 +742,11 @@ result.flux = flux(1:n);
 result.iter = iter;
 if result.GRmax > GRtol
     if numInstab
-        result.stat = 'Numerical instability 1';
+        result.stat = 'Numerical instability (feasibility)';
     elseif numInstab2
-        result.stat = 'Numerical instability 2';
+        result.stat = 'Numerical instability (growth rate correction)';
     elseif numInstab3
-        result.stat = 'Numerical instability 3';
+        result.stat = 'Numerical instability (biomass constraint)';
     else
         %otherwise 'maintenance' set at the very beginning
         result.stat = 'optimal';
@@ -748,11 +754,11 @@ if result.GRmax > GRtol
 end
 if pL
     if numInstab
-        fprintf('Numerical instability for feasibility occurs.\n');
+        fprintf('Numerical instability for feasibility during the iterations.\n');
     elseif numInstab2
-        fprintf('Numerical instability during final correction of growth rate occurs.\n');
+        fprintf('Numerical instability after final correction of growth rate.\n');
     elseif numInstab3
-        fprintf('Numerical instability during final correction of biomass occurs.\n');
+        fprintf('Numerical instability after adding the biomass constraint.\n');
     end
     fprintf('Maximum community growth rate: %.6f (abs. error < %.1g).\tTime elapsed: %.0f sec\n', GRmax, GRtol, toc(t));
 end

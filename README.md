@@ -1,4 +1,11 @@
 # SteadyCom
+
+Update on Jul 26, 2017
+
+SteadyCom is now integrated into the COnstraint-Based Reconstruction and Analysis (COBRA) Toolbox which supports a wide range of solvers. Please see https://github.com/opencobra/cobratoolbox
+
+_______
+
 Computing the maximum growth rate of a microbial community at community steady-state.
 
 Chan SHJ, Simons MN, Maranas CD (2017) SteadyCom: Predicting microbial abundances while ensuring community stability. PLoS Comput Biol 13(5): e1005539. https://doi.org/10.1371/journal.pcbi.1005539

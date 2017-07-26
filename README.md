@@ -2,7 +2,7 @@
 
 Update on Jul 26, 2017
 
-SteadyCom is now integrated into the COnstraint-Based Reconstruction and Analysis (COBRA) Toolbox which supports a wide range of solvers. Please see https://github.com/opencobra/cobratoolbox
+SteadyCom is now integrated into the COnstraint-Based Reconstruction and Analysis (COBRA) Toolbox which supports a wide range of solvers. Please see https://opencobra.github.io/cobratoolbox
 
 _______
 
